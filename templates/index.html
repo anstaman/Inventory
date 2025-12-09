@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sisäinen Varastonhallintajärjestelmä</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-box select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .filter-box select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e68900;
+        }
+
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.875rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .product-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            min-height: 45px;
+        }
+
+        .product-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4caf50;
+        }
+
+        .product-quantity {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .quantity-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .quantity-low {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .quantity-medium {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .quantity-high {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .product-actions button {
+            flex: 1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .form-actions button {
+            flex: 1;
+        }
+
+        .stats {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 Varastonhallintajärjestelmä</h1>
+            <p>Hallitse yrityksen varastoja helposti</p>
+        </header>
+
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalProducts">0</div>
+                <div class="stat-label">Tuotteita yhteensä</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalQuantity">0</div>
+                <div class="stat-label">Tuotteita varastossa</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalValue">0€</div>
+                <div class="stat-label">Varaston arvo</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="lowStockItems">0</div>
+                <div class="stat-label">Vähävarastoiset</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Etsi tuotteita nimellä tai kuvauksella...">
+            </div>
+            <div class="filter-box">
+                <label for="categoryFilter">Kategoria:</label>
+                <select id="categoryFilter">
+                    <option value="">Kaikki kategoriat</option>
+                </select>
+            </div>
+            <div class="filter-box">
+                <label for="locationFilter">Varasto:</label>
+                <select id="locationFilter">
+                    <option value="">Kaikki varastot</option>
+                    <optgroup label="Sisäiset varastot">
+                        <option value="Vantaa">Vantaa</option>
+                        <option value="Tampere">Tampere</option>
+                        <option value="Hollola">Hollola</option>
+                    </optgroup>
+                    <optgroup label="Ulkoiset varastot">
+                        <option value="Ulkovarasto 1">Ulkovarasto 1</option>
+                        <option value="Ulkovarasto 2">Ulkovarasto 2</option>
+                        <option value="Ulkovarasto 3">Ulkovarasto 3</option>
+                    </optgroup>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="openAddModal()">+ Lisää tuote</button>
+            <button class="btn btn-warning" onclick="openCategoryModal()">⚙️ Hallinnoi kategorioita</button>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Lisää uusi tuote</div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                
+                <div class="form-group">
+                    <label for="productName">Tuotteen nimi *</label>
+                    <input type="text" id="productName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="productDescription">Kuvaus</label>
+                    <textarea id="productDescription"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="productCategory">Kategoria *</label>
+                    <select id="productCategory" required>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productLocation">Varastopaikka *</label>
+                    <select id="productLocation" required>
+                        <optgroup label="Sisäiset varastot">
+                            <option value="Vantaa">Vantaa</option>
+                            <option value="Tampere">Tampere</option>
+                            <option value="Hollola">Hollola</option>
+                        </optgroup>
+                        <optgroup label="Ulkoiset varastot">
+                            <option value="Ulkovarasto 1">Ulkovarasto 1</option>
+                            <option value="Ulkovarasto 2">Ulkovarasto 2</option>
+                            <option value="Ulkovarasto 3">Ulkovarasto 3</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productPrice">Hinta (€) *</label>
+                    <input type="number" id="productPrice" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="productQuantity">Määrä *</label>
+                    <input type="number" id="productQuantity" min="0" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" onclick="closeModal()">Peruuta</button>
+                    <button type="submit" class="btn btn-success">Tallenna tuote</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Management Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">Hallinnoi kategorioita</div>
+            
+            <div class="form-group">
+                <label for="newCategoryName">Lisää uusi kategoria</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="newCategoryName" placeholder="Kategorian nimi" style="flex: 1;">
+                    <button type="button" class="btn btn-success" onclick="addCategory()">Lisää</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Nykyiset kategoriat:</label>
+                <div id="categoriesList" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Categories will be loaded here -->
+                </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 25px;">
+                <button type="button" class="btn btn-primary" onclick="closeCategoryModal()">Sulje</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let categories = [];
+        let editingProductId = null;
+
+        // Load products on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
+            loadProducts();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterProducts);
+            document.getElementById('categoryFilter').addEventListener('change', filterProducts);
+            document.getElementById('locationFilter').addEventListener('input', filterProducts);
+            document.getElementById('productForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                categories = await response.json();
+                updateCategorySelects();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        function updateCategorySelects() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            const productCategory = document.getElementById('productCategory');
+            
+            const currentFilterValue = categoryFilter.value;
+            const currentProductValue = productCategory.value;
+            
+            // Update filter dropdown
+            categoryFilter.innerHTML = '<option value="">Kaikki kategoriat</option>' +
+                categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            categoryFilter.value = currentFilterValue;
+            
+            // Update product form dropdown
+            productCategory.innerHTML = categories.map(cat => 
+                `<option value="${cat.name}">${cat.name}</option>`
+            ).join('');
+            if (currentProductValue && categories.find(c => c.name === currentProductValue)) {
+                productCategory.value = currentProductValue;
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                products = await response.json();
+                updateCategoryFilter();
+                updateStats();
+                displayProducts(products);
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        function displayProducts(productsToDisplay) {
+            const grid = document.getElementById('productsGrid');
+            
+            if (productsToDisplay.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <h2>Ei tuotteita</h2>
+                        <p>Aloita lisäämällä ensimmäinen tuote varastoon</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = productsToDisplay.map(product => {
+                const quantityClass = product.quantity < 20 ? 'quantity-low' : 
+                                     product.quantity < 50 ? 'quantity-medium' : 'quantity-high';
+                
+                return `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div>
+                                <div class="product-name">${product.name}</div>
+                                <span class="product-category">${product.category || 'Ei kategoriaa'}</span>
+                            </div>
+                        </div>
+                        <div class="product-description">${product.description || 'Ei kuvausta'}</div>
+                        <div style="margin: 10px 0; padding: 8px; background: #f5f5f5; border-radius: 5px;">
+                            <strong>📍 Sijainti:</strong> ${product.location || 'Ei sijaintia'}
+                        </div>
+                        <div class="product-details">
+                            <div class="product-price">${product.price.toFixed(2)}€</div>
+                            <div class="product-quantity">
+                                <span class="quantity-badge ${quantityClass}">
+                                    ${product.quantity} kpl
+                                </span>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-warning btn-sm" onclick="openEditModal(${product.id})">Muokkaa</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})">Poista</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateCategoryFilter() {
+            const usedCategories = [...new Set(products.map(p => p.category).filter(c => c))].sort();
+            const filter = document.getElementById('categoryFilter');
+            const currentValue = filter.value;
+            
+            filter.innerHTML = '<option value="">Kaikki kategoriat</option>' +
+                usedCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            
+            filter.value = currentValue;
+        }
+
+        function updateStats() {
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('totalQuantity').textContent = 
+                products.reduce((sum, p) => sum + p.quantity, 0);
+            document.getElementById('totalValue').textContent = 
+                products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2) + '€';
+            document.getElementById('lowStockItems').textContent = 
+                products.filter(p => p.quantity < 20).length;
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value;
+
+            const filtered = products.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
+                                    (product.description && product.description.toLowerCase().includes(searchTerm));
+                const matchesCategory = !categoryFilter || product.category === categoryFilter;
+                const matchesLocation = !locationFilter || product.location === locationFilter;
+                return matchesSearch && matchesCategory && matchesLocation;
+            });
+
+            displayProducts(filtered);
+        }
+
+        function openAddModal() {
+            editingProductId = null;
+            document.getElementById('modalTitle').textContent = 'Lisää uusi tuote';
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function openEditModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            editingProductId = productId;
+            document.getElementById('modalTitle').textContent = 'Muokkaa tuotetta';
+            document.getElementById('productId').value = product.id;
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productCategory').value = product.category || '';
+            document.getElementById('productLocation').value = product.location || 'Vantaa';
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productQuantity').value = product.quantity;
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const productData = {
+                name: document.getElementById('productName').value,
+                description: document.getElementById('productDescription').value,
+                category: document.getElementById('productCategory').value,
+                location: document.getElementById('productLocation').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                quantity: parseInt(document.getElementById('productQuantity').value)
+            };
+
+            try {
+                let response;
+                if (editingProductId) {
+                    response = await fetch(`/api/products/${editingProductId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+                } else {
+                    response = await fetch('/api/products', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+                }
+
+                if (response.ok) {
+                    closeModal();
+                    await loadProducts();
+                }
+            } catch (error) {
+                console.error('Error saving product:', error);
+                alert('Virhe tallennettaessa tuotetta. Yritä uudelleen.');
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Haluatko varmasti poistaa tämän tuotteen?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/products/${productId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await loadProducts();
+                }
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Virhe poistettaessa tuotetta. Yritä uudelleen.');
+            }
+        }
+
+        // Category Management
+        function openCategoryModal() {
+            loadCategoriesForManagement();
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+        }
+
+        async function loadCategoriesForManagement() {
+            await loadCategories();
+            const list = document.getElementById('categoriesList');
+            
+            if (categories.length === 0) {
+                list.innerHTML = '<p style="color: #999;">Ei kategorioita</p>';
+                return;
+            }
+
+            list.innerHTML = categories.map(cat => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                    <span style="font-weight: 600;">${cat.name}</span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteCategory(${cat.id})">Poista</button>
+                </div>
+            `).join('');
+        }
+
+        async function addCategory() {
+            const name = document.getElementById('newCategoryName').value.trim();
+            
+            if (!name) {
+                alert('Anna kategorian nimi');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/categories', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name })
+                });
+
+                if (response.ok) {
+                    document.getElementById('newCategoryName').value = '';
+                    await loadCategoriesForManagement();
+                    updateCategorySelects();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Virhe lisättäessä kategoriaa');
+                }
+            } catch (error) {
+                console.error('Error adding category:', error);
+                alert('Virhe lisättäessä kategoriaa. Yritä uudelleen.');
+            }
+        }
+
+        async function deleteCategory(categoryId) {
+            if (!confirm('Haluatko varmasti poistaa tämän kategorian?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/categories/${categoryId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await loadCategoriesForManagement();
+                    updateCategorySelects();
+                }
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                alert('Virhe poistettaessa kategoriaa. Yritä uudelleen.');
+            }
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('productModal').addEventListener('click', (e) => {
+            if (e.target.id === 'productModal') {
+                closeModal();
+            }
+        });
+
+        document.getElementById('categoryModal').addEventListener('click', (e) => {
+            if (e.target.id === 'categoryModal') {
+                closeCategoryModal();
+            }
+        });
+    </script>
+</body>
+</html>
