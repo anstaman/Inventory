@@ -10,6 +10,19 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# Category Model
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
 # Product Model
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -17,7 +30,8 @@ class Product(db.Model):
     description = db.Column(db.String(500))
     quantity = db.Column(db.Integer, nullable=False, default=0)
     price = db.Column(db.Float, nullable=False)
-    category = db.Column(db.String(50))
+    category = db.Column(db.String(100))
+    location = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def to_dict(self):
@@ -28,6 +42,7 @@ class Product(db.Model):
             'quantity': self.quantity,
             'price': self.price,
             'category': self.category,
+            'location': self.location,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
@@ -55,7 +70,8 @@ def create_product():
         description=data.get('description', ''),
         quantity=data.get('quantity', 0),
         price=data['price'],
-        category=data.get('category', 'General')
+        category=data.get('category', 'TARVIKKEET'),
+        location=data.get('location', 'Vantaa')
     )
     
     db.session.add(new_product)
@@ -73,6 +89,7 @@ def update_product(product_id):
     product.quantity = data.get('quantity', product.quantity)
     product.price = data.get('price', product.price)
     product.category = data.get('category', product.category)
+    product.location = data.get('location', product.location)
     
     db.session.commit()
     
@@ -85,6 +102,35 @@ def delete_product(product_id):
     db.session.commit()
     
     return jsonify({'message': 'Product deleted successfully'}), 200
+
+# Category Routes
+@app.route('/api/categories', methods=['GET'])
+def get_categories():
+    categories = Category.query.all()
+    return jsonify([category.to_dict() for category in categories])
+
+@app.route('/api/categories', methods=['POST'])
+def create_category():
+    data = request.json
+    
+    # Check if category already exists
+    existing = Category.query.filter_by(name=data['name']).first()
+    if existing:
+        return jsonify({'error': 'Category already exists'}), 400
+    
+    new_category = Category(name=data['name'])
+    db.session.add(new_category)
+    db.session.commit()
+    
+    return jsonify(new_category.to_dict()), 201
+
+@app.route('/api/categories/<int:category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    category = Category.query.get_or_404(category_id)
+    db.session.delete(category)
+    db.session.commit()
+    
+    return jsonify({'message': 'Category deleted successfully'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management System</title>
+    <title>Sisäinen Varastonhallintajärjestelmä</title>
     <style>
         * {
             margin: 0;
@@ -374,40 +374,57 @@
 <body>
     <div class="container">
         <header>
-            <h1>📦 Inventory Management System</h1>
-            <p>Manage your retail store inventory with ease</p>
+            <h1>📦 Varastonhallintajärjestelmä</h1>
+            <p>Hallitse yrityksen varastoja helposti</p>
         </header>
 
         <div class="stats" id="stats">
             <div class="stat-item">
                 <div class="stat-value" id="totalProducts">0</div>
-                <div class="stat-label">Total Products</div>
+                <div class="stat-label">Tuotteita yhteensä</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value" id="totalQuantity">0</div>
-                <div class="stat-label">Total Items in Stock</div>
+                <div class="stat-label">Tuotteita varastossa</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value" id="totalValue">$0</div>
-                <div class="stat-label">Total Inventory Value</div>
+                <div class="stat-value" id="totalValue">0€</div>
+                <div class="stat-label">Varaston arvo</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value" id="lowStockItems">0</div>
-                <div class="stat-label">Low Stock Items</div>
+                <div class="stat-label">Vähävarastoiset</div>
             </div>
         </div>
 
         <div class="controls">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 Search products by name or description...">
+                <input type="text" id="searchInput" placeholder="🔍 Etsi tuotteita nimellä tai kuvauksella...">
             </div>
             <div class="filter-box">
-                <label for="categoryFilter">Category:</label>
+                <label for="categoryFilter">Kategoria:</label>
                 <select id="categoryFilter">
-                    <option value="">All Categories</option>
+                    <option value="">Kaikki kategoriat</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="openAddModal()">+ Add Product</button>
+            <div class="filter-box">
+                <label for="locationFilter">Varasto:</label>
+                <select id="locationFilter">
+                    <option value="">Kaikki varastot</option>
+                    <optgroup label="Sisäiset varastot">
+                        <option value="Vantaa">Vantaa</option>
+                        <option value="Tampere">Tampere</option>
+                        <option value="Hollola">Hollola</option>
+                    </optgroup>
+                    <optgroup label="Ulkoiset varastot">
+                        <option value="Ulkovarasto 1">Ulkovarasto 1</option>
+                        <option value="Ulkovarasto 2">Ulkovarasto 2</option>
+                        <option value="Ulkovarasto 3">Ulkovarasto 3</option>
+                    </optgroup>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="openAddModal()">+ Lisää tuote</button>
+            <button class="btn btn-warning" onclick="openCategoryModal()">⚙️ Hallinnoi kategorioita</button>
         </div>
 
         <div class="products-grid" id="productsGrid">
@@ -418,55 +435,94 @@
     <!-- Add/Edit Product Modal -->
     <div class="modal" id="productModal">
         <div class="modal-content">
-            <div class="modal-header" id="modalTitle">Add New Product</div>
+            <div class="modal-header" id="modalTitle">Lisää uusi tuote</div>
             <form id="productForm">
                 <input type="hidden" id="productId">
                 
                 <div class="form-group">
-                    <label for="productName">Product Name *</label>
+                    <label for="productName">Tuotteen nimi *</label>
                     <input type="text" id="productName" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="productDescription">Description</label>
+                    <label for="productDescription">Kuvaus</label>
                     <textarea id="productDescription"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="productCategory">Category *</label>
+                    <label for="productCategory">Kategoria *</label>
                     <select id="productCategory" required>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Furniture">Furniture</option>
-                        <option value="Office Supplies">Office Supplies</option>
-                        <option value="Kitchen">Kitchen</option>
-                        <option value="General">General</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="productPrice">Price ($) *</label>
+                    <label for="productLocation">Varastopaikka *</label>
+                    <select id="productLocation" required>
+                        <optgroup label="Sisäiset varastot">
+                            <option value="Vantaa">Vantaa</option>
+                            <option value="Tampere">Tampere</option>
+                            <option value="Hollola">Hollola</option>
+                        </optgroup>
+                        <optgroup label="Ulkoiset varastot">
+                            <option value="Ulkovarasto 1">Ulkovarasto 1</option>
+                            <option value="Ulkovarasto 2">Ulkovarasto 2</option>
+                            <option value="Ulkovarasto 3">Ulkovarasto 3</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productPrice">Hinta (€) *</label>
                     <input type="number" id="productPrice" step="0.01" min="0" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="productQuantity">Quantity *</label>
+                    <label for="productQuantity">Määrä *</label>
                     <input type="number" id="productQuantity" min="0" required>
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-danger" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success">Save Product</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal()">Peruuta</button>
+                    <button type="submit" class="btn btn-success">Tallenna tuote</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Category Management Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">Hallinnoi kategorioita</div>
+            
+            <div class="form-group">
+                <label for="newCategoryName">Lisää uusi kategoria</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="newCategoryName" placeholder="Kategorian nimi" style="flex: 1;">
+                    <button type="button" class="btn btn-success" onclick="addCategory()">Lisää</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Nykyiset kategoriat:</label>
+                <div id="categoriesList" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Categories will be loaded here -->
+                </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 25px;">
+                <button type="button" class="btn btn-primary" onclick="closeCategoryModal()">Sulje</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let products = [];
+        let categories = [];
         let editingProductId = null;
 
         // Load products on page load
         document.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
             loadProducts();
             setupEventListeners();
         });
@@ -474,7 +530,39 @@
         function setupEventListeners() {
             document.getElementById('searchInput').addEventListener('input', filterProducts);
             document.getElementById('categoryFilter').addEventListener('change', filterProducts);
+            document.getElementById('locationFilter').addEventListener('input', filterProducts);
             document.getElementById('productForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                categories = await response.json();
+                updateCategorySelects();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        function updateCategorySelects() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            const productCategory = document.getElementById('productCategory');
+            
+            const currentFilterValue = categoryFilter.value;
+            const currentProductValue = productCategory.value;
+            
+            // Update filter dropdown
+            categoryFilter.innerHTML = '<option value="">Kaikki kategoriat</option>' +
+                categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            categoryFilter.value = currentFilterValue;
+            
+            // Update product form dropdown
+            productCategory.innerHTML = categories.map(cat => 
+                `<option value="${cat.name}">${cat.name}</option>`
+            ).join('');
+            if (currentProductValue && categories.find(c => c.name === currentProductValue)) {
+                productCategory.value = currentProductValue;
+            }
         }
 
         async function loadProducts() {
@@ -495,8 +583,8 @@
             if (productsToDisplay.length === 0) {
                 grid.innerHTML = `
                     <div class="empty-state" style="grid-column: 1/-1;">
-                        <h2>No products found</h2>
-                        <p>Start by adding your first product to the inventory</p>
+                        <h2>Ei tuotteita</h2>
+                        <p>Aloita lisäämällä ensimmäinen tuote varastoon</p>
                     </div>
                 `;
                 return;
@@ -511,21 +599,24 @@
                         <div class="product-header">
                             <div>
                                 <div class="product-name">${product.name}</div>
-                                <span class="product-category">${product.category}</span>
+                                <span class="product-category">${product.category || 'Ei kategoriaa'}</span>
                             </div>
                         </div>
-                        <div class="product-description">${product.description || 'No description available'}</div>
+                        <div class="product-description">${product.description || 'Ei kuvausta'}</div>
+                        <div style="margin: 10px 0; padding: 8px; background: #f5f5f5; border-radius: 5px;">
+                            <strong>📍 Sijainti:</strong> ${product.location || 'Ei sijaintia'}
+                        </div>
                         <div class="product-details">
-                            <div class="product-price">$${product.price.toFixed(2)}</div>
+                            <div class="product-price">${product.price.toFixed(2)}€</div>
                             <div class="product-quantity">
                                 <span class="quantity-badge ${quantityClass}">
-                                    ${product.quantity} in stock
+                                    ${product.quantity} kpl
                                 </span>
                             </div>
                         </div>
                         <div class="product-actions">
-                            <button class="btn btn-warning btn-sm" onclick="openEditModal(${product.id})">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})">Delete</button>
+                            <button class="btn btn-warning btn-sm" onclick="openEditModal(${product.id})">Muokkaa</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})">Poista</button>
                         </div>
                     </div>
                 `;
@@ -533,12 +624,12 @@
         }
 
         function updateCategoryFilter() {
-            const categories = [...new Set(products.map(p => p.category))].sort();
+            const usedCategories = [...new Set(products.map(p => p.category).filter(c => c))].sort();
             const filter = document.getElementById('categoryFilter');
             const currentValue = filter.value;
             
-            filter.innerHTML = '<option value="">All Categories</option>' +
-                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            filter.innerHTML = '<option value="">Kaikki kategoriat</option>' +
+                usedCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
             
             filter.value = currentValue;
         }
@@ -548,7 +639,7 @@
             document.getElementById('totalQuantity').textContent = 
                 products.reduce((sum, p) => sum + p.quantity, 0);
             document.getElementById('totalValue').textContent = 
-                '$' + products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2);
+                products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2) + '€';
             document.getElementById('lowStockItems').textContent = 
                 products.filter(p => p.quantity < 20).length;
         }
@@ -556,12 +647,14 @@
         function filterProducts() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const categoryFilter = document.getElementById('categoryFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value;
 
             const filtered = products.filter(product => {
                 const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
                                     (product.description && product.description.toLowerCase().includes(searchTerm));
                 const matchesCategory = !categoryFilter || product.category === categoryFilter;
-                return matchesSearch && matchesCategory;
+                const matchesLocation = !locationFilter || product.location === locationFilter;
+                return matchesSearch && matchesCategory && matchesLocation;
             });
 
             displayProducts(filtered);
@@ -569,7 +662,7 @@
 
         function openAddModal() {
             editingProductId = null;
-            document.getElementById('modalTitle').textContent = 'Add New Product';
+            document.getElementById('modalTitle').textContent = 'Lisää uusi tuote';
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
             document.getElementById('productModal').classList.add('active');
@@ -580,11 +673,12 @@
             if (!product) return;
 
             editingProductId = productId;
-            document.getElementById('modalTitle').textContent = 'Edit Product';
+            document.getElementById('modalTitle').textContent = 'Muokkaa tuotetta';
             document.getElementById('productId').value = product.id;
             document.getElementById('productName').value = product.name;
             document.getElementById('productDescription').value = product.description || '';
-            document.getElementById('productCategory').value = product.category;
+            document.getElementById('productCategory').value = product.category || '';
+            document.getElementById('productLocation').value = product.location || 'Vantaa';
             document.getElementById('productPrice').value = product.price;
             document.getElementById('productQuantity').value = product.quantity;
             document.getElementById('productModal').classList.add('active');
@@ -601,6 +695,7 @@
                 name: document.getElementById('productName').value,
                 description: document.getElementById('productDescription').value,
                 category: document.getElementById('productCategory').value,
+                location: document.getElementById('productLocation').value,
                 price: parseFloat(document.getElementById('productPrice').value),
                 quantity: parseInt(document.getElementById('productQuantity').value)
             };
@@ -627,12 +722,12 @@
                 }
             } catch (error) {
                 console.error('Error saving product:', error);
-                alert('Error saving product. Please try again.');
+                alert('Virhe tallennettaessa tuotetta. Yritä uudelleen.');
             }
         }
 
         async function deleteProduct(productId) {
-            if (!confirm('Are you sure you want to delete this product?')) {
+            if (!confirm('Haluatko varmasti poistaa tämän tuotteen?')) {
                 return;
             }
 
@@ -646,14 +741,96 @@
                 }
             } catch (error) {
                 console.error('Error deleting product:', error);
-                alert('Error deleting product. Please try again.');
+                alert('Virhe poistettaessa tuotetta. Yritä uudelleen.');
             }
         }
 
-        // Close modal when clicking outside
+        // Category Management
+        function openCategoryModal() {
+            loadCategoriesForManagement();
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+        }
+
+        async function loadCategoriesForManagement() {
+            await loadCategories();
+            const list = document.getElementById('categoriesList');
+            
+            if (categories.length === 0) {
+                list.innerHTML = '<p style="color: #999;">Ei kategorioita</p>';
+                return;
+            }
+
+            list.innerHTML = categories.map(cat => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                    <span style="font-weight: 600;">${cat.name}</span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteCategory(${cat.id})">Poista</button>
+                </div>
+            `).join('');
+        }
+
+        async function addCategory() {
+            const name = document.getElementById('newCategoryName').value.trim();
+            
+            if (!name) {
+                alert('Anna kategorian nimi');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/categories', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name })
+                });
+
+                if (response.ok) {
+                    document.getElementById('newCategoryName').value = '';
+                    await loadCategoriesForManagement();
+                    updateCategorySelects();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Virhe lisättäessä kategoriaa');
+                }
+            } catch (error) {
+                console.error('Error adding category:', error);
+                alert('Virhe lisättäessä kategoriaa. Yritä uudelleen.');
+            }
+        }
+
+        async function deleteCategory(categoryId) {
+            if (!confirm('Haluatko varmasti poistaa tämän kategorian?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/categories/${categoryId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await loadCategoriesForManagement();
+                    updateCategorySelects();
+                }
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                alert('Virhe poistettaessa kategoriaa. Yritä uudelleen.');
+            }
+        }
+
+        // Close modals when clicking outside
         document.getElementById('productModal').addEventListener('click', (e) => {
             if (e.target.id === 'productModal') {
                 closeModal();
+            }
+        });
+
+        document.getElementById('categoryModal').addEventListener('click', (e) => {
+            if (e.target.id === 'categoryModal') {
+                closeCategoryModal();
             }
         });
     </script>

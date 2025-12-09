@@ -1,4 +1,4 @@
-from app import app, db, Product
+from app import app, db, Product, Category
 
 def init_database():
     with app.app_context():
@@ -10,147 +10,189 @@ def init_database():
             print("Database already contains products. Skipping initialization.")
             return
         
-        # Sample products data
+        # Initialize categories
+        categories = [
+            'DEMOLAITTEET',
+            'VALMIIT',
+            'KOTELOT',
+            'IT TAVARAT',
+            'TARVIKKEET',
+            'LAITEOSAT'
+        ]
+        
+        for cat_name in categories:
+            category = Category(name=cat_name)
+            db.session.add(category)
+        
+        db.session.commit()
+        print(f"Initialized {len(categories)} categories")
+        
+        # Warehouse locations
+        internal_warehouses = ['Vantaa', 'Tampere', 'Hollola']
+        external_warehouses = ['Ulkovarasto 1', 'Ulkovarasto 2', 'Ulkovarasto 3']
+        all_locations = internal_warehouses + external_warehouses
+        
+        # Sample products data with Finnish context
         sample_products = [
             {
-                'name': 'Wireless Mouse',
-                'description': 'Ergonomic wireless mouse with 2.4GHz connectivity',
-                'quantity': 45,
-                'price': 29.99,
-                'category': 'Electronics'
-            },
-            {
-                'name': 'USB-C Cable',
-                'description': 'High-speed USB-C to USB-C cable, 6ft length',
-                'quantity': 120,
-                'price': 12.99,
-                'category': 'Electronics'
-            },
-            {
-                'name': 'Office Chair',
-                'description': 'Ergonomic office chair with lumbar support',
+                'name': 'Demokotelo A1',
+                'description': 'Demokäyttöön tarkoitettu esittelykotelo',
                 'quantity': 15,
-                'price': 199.99,
-                'category': 'Furniture'
+                'price': 450.00,
+                'category': 'DEMOLAITTEET',
+                'location': 'Vantaa'
             },
             {
-                'name': 'Standing Desk',
-                'description': 'Adjustable height standing desk, electric motor',
+                'name': 'Demokotelo B2',
+                'description': 'Asiakasesittelyyn soveltuva demokotelo',
                 'quantity': 8,
-                'price': 499.99,
-                'category': 'Furniture'
+                'price': 520.00,
+                'category': 'DEMOLAITTEET',
+                'location': 'Tampere'
             },
             {
-                'name': 'LED Monitor 27"',
-                'description': '27-inch LED monitor, 1920x1080 resolution',
+                'name': 'Valmis tuote X100',
+                'description': 'Täysin kasattu ja testattu tuote',
+                'quantity': 45,
+                'price': 1200.00,
+                'category': 'VALMIIT',
+                'location': 'Vantaa'
+            },
+            {
+                'name': 'Valmis tuote X200',
+                'description': 'Premium-versio valmiista tuotteesta',
                 'quantity': 22,
-                'price': 249.99,
-                'category': 'Electronics'
+                'price': 1850.00,
+                'category': 'VALMIIT',
+                'location': 'Hollola'
             },
             {
-                'name': 'Mechanical Keyboard',
-                'description': 'RGB mechanical keyboard with blue switches',
-                'quantity': 35,
-                'price': 89.99,
-                'category': 'Electronics'
+                'name': 'Alumiinikotelo 300x200x150',
+                'description': 'Alumiininen suojakotelo',
+                'quantity': 120,
+                'price': 85.00,
+                'category': 'KOTELOT',
+                'location': 'Ulkovarasto 1'
             },
             {
-                'name': 'Notebook Set',
-                'description': 'Set of 5 lined notebooks, A5 size',
+                'name': 'Muovikotelo 250x150x100',
+                'description': 'Muovinen kevyt kotelo',
                 'quantity': 200,
-                'price': 15.99,
-                'category': 'Office Supplies'
+                'price': 35.00,
+                'category': 'KOTELOT',
+                'location': 'Ulkovarasto 1'
             },
             {
-                'name': 'Blue Pens (Pack of 12)',
-                'description': 'Ballpoint pens, blue ink, pack of 12',
-                'quantity': 150,
-                'price': 5.99,
-                'category': 'Office Supplies'
-            },
-            {
-                'name': 'Desk Lamp',
-                'description': 'LED desk lamp with adjustable brightness',
-                'quantity': 40,
-                'price': 34.99,
-                'category': 'Electronics'
-            },
-            {
-                'name': 'Whiteboard',
-                'description': 'Magnetic whiteboard, 36x24 inches',
-                'quantity': 12,
-                'price': 45.99,
-                'category': 'Office Supplies'
-            },
-            {
-                'name': 'Bluetooth Speaker',
-                'description': 'Portable Bluetooth speaker with 10-hour battery',
+                'name': 'Teräskotelo 400x300x200',
+                'description': 'Vahva teräskotelo',
                 'quantity': 55,
-                'price': 59.99,
-                'category': 'Electronics'
+                'price': 145.00,
+                'category': 'KOTELOT',
+                'location': 'Vantaa'
             },
             {
-                'name': 'Laptop Stand',
-                'description': 'Aluminum laptop stand, adjustable height',
-                'quantity': 30,
-                'price': 39.99,
-                'category': 'Electronics'
+                'name': 'Kannettava tietokone',
+                'description': 'Työasema-kannettava, Intel i7',
+                'quantity': 12,
+                'price': 1200.00,
+                'category': 'IT TAVARAT',
+                'location': 'Tampere'
             },
             {
-                'name': 'File Organizer',
-                'description': 'Desktop file organizer with 5 compartments',
-                'quantity': 25,
-                'price': 24.99,
-                'category': 'Office Supplies'
-            },
-            {
-                'name': 'Coffee Mug',
-                'description': 'Ceramic coffee mug, 16 oz capacity',
-                'quantity': 80,
-                'price': 9.99,
-                'category': 'Kitchen'
-            },
-            {
-                'name': 'Water Bottle',
-                'description': 'Stainless steel water bottle, 32 oz, insulated',
-                'quantity': 65,
-                'price': 24.99,
-                'category': 'Kitchen'
-            },
-            {
-                'name': 'Desk Organizer',
-                'description': 'Mesh desk organizer with multiple compartments',
-                'quantity': 42,
-                'price': 19.99,
-                'category': 'Office Supplies'
-            },
-            {
-                'name': 'Webcam HD',
-                'description': '1080p HD webcam with built-in microphone',
+                'name': 'Näyttö 24"',
+                'description': 'Full HD -näyttö',
                 'quantity': 28,
-                'price': 69.99,
-                'category': 'Electronics'
+                'price': 180.00,
+                'category': 'IT TAVARAT',
+                'location': 'Tampere'
             },
             {
-                'name': 'Printer Paper',
-                'description': 'A4 printer paper, 500 sheets per ream',
-                'quantity': 100,
-                'price': 8.99,
-                'category': 'Office Supplies'
+                'name': 'Verkkokaapeli Cat6 (100m)',
+                'description': 'Verkkokaapelirulla',
+                'quantity': 45,
+                'price': 65.00,
+                'category': 'IT TAVARAT',
+                'location': 'Ulkovarasto 2'
             },
             {
-                'name': 'Stapler',
-                'description': 'Heavy-duty stapler, 50-sheet capacity',
-                'quantity': 60,
-                'price': 14.99,
-                'category': 'Office Supplies'
+                'name': 'USB-muistitikku 32GB',
+                'description': 'USB 3.0 muistitikku',
+                'quantity': 150,
+                'price': 12.00,
+                'category': 'IT TAVARAT',
+                'location': 'Vantaa'
             },
             {
-                'name': 'USB Flash Drive 64GB',
-                'description': 'USB 3.0 flash drive, 64GB capacity',
-                'quantity': 90,
-                'price': 18.99,
-                'category': 'Electronics'
+                'name': 'Ruuvit M4x20 (100kpl)',
+                'description': 'Ruuvipakkaus',
+                'quantity': 300,
+                'price': 8.50,
+                'category': 'TARVIKKEET',
+                'location': 'Ulkovarasto 3'
+            },
+            {
+                'name': 'Mutterit M4 (100kpl)',
+                'description': 'Mutteripakkaus',
+                'quantity': 280,
+                'price': 6.50,
+                'category': 'TARVIKKEET',
+                'location': 'Ulkovarasto 3'
+            },
+            {
+                'name': 'Kaapelinipat (50kpl)',
+                'description': 'Muoviset kaapelinipat',
+                'quantity': 500,
+                'price': 4.00,
+                'category': 'TARVIKKEET',
+                'location': 'Hollola'
+            },
+            {
+                'name': 'Teippi 50mm (50m)',
+                'description': 'Pakkausteipin rulla',
+                'quantity': 180,
+                'price': 5.50,
+                'category': 'TARVIKKEET',
+                'location': 'Hollola'
+            },
+            {
+                'name': 'Emolevy ATX',
+                'description': 'Vaihto-osa: ATX-emolevy',
+                'quantity': 8,
+                'price': 145.00,
+                'category': 'LAITEOSAT',
+                'location': 'Vantaa'
+            },
+            {
+                'name': 'Virtalähde 500W',
+                'description': 'Modulaarinen virtalähde',
+                'quantity': 18,
+                'price': 89.00,
+                'category': 'LAITEOSAT',
+                'location': 'Vantaa'
+            },
+            {
+                'name': 'Tuuletin 120mm',
+                'description': 'Kotelo- tai jäähdytystuuletin',
+                'quantity': 95,
+                'price': 12.00,
+                'category': 'LAITEOSAT',
+                'location': 'Ulkovarasto 2'
+            },
+            {
+                'name': 'Näppäimistö',
+                'description': 'Langallinen näppäimistö',
+                'quantity': 35,
+                'price': 25.00,
+                'category': 'LAITEOSAT',
+                'location': 'Tampere'
+            },
+            {
+                'name': 'Hiiri',
+                'description': 'Optinen hiiri USB',
+                'quantity': 42,
+                'price': 15.00,
+                'category': 'LAITEOSAT',
+                'location': 'Tampere'
             }
         ]
         

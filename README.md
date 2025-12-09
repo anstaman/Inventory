@@ -1,120 +1,168 @@
-# Inventory Management System
+# Sisäinen Varastonhallintajärjestelmä
 
-A modern web application for managing retail store inventory. Built with Flask and SQLite, featuring a clean and intuitive user interface.
+Moderni web-sovellus yrityksen sisäisten ja ulkoisten varastojen hallintaan. Rakennettu Flaskilla ja SQLitellä, moderneilla käyttöliittymäratkaisuilla.
 
-## Features
+## Ominaisuudet
 
-- 📦 **Browse Products**: View all products in a responsive grid layout
-- ➕ **Add Products**: Easily add new products with details like name, description, price, quantity, and category
-- ✏️ **Edit Products**: Update product information and quantities
-- 🗑️ **Delete Products**: Remove products from inventory
-- 🔍 **Search**: Search products by name or description
-- 🏷️ **Filter**: Filter products by category
-- 📊 **Statistics**: View key metrics like total products, stock levels, and inventory value
-- 🎨 **Modern UI**: Beautiful gradient design with responsive cards and smooth animations
+- 📦 **Selaa tuotteita**: Näytä kaikki tuotteet responsiivisessa ruudukkojärjestyksessä
+- ➕ **Lisää tuotteita**: Lisää helposti uusia tuotteita tiedoilla kuten nimi, kuvaus, hinta, määrä, kategoria ja sijainti
+- ✏️ **Muokkaa tuotteita**: Päivitä tuotetiedot ja määrät
+- 🗑️ **Poista tuotteita**: Poista tuotteita varastosta
+- 🔍 **Haku**: Etsi tuotteita nimellä tai kuvauksella
+- 🏷️ **Suodata**: Suodata tuotteita kategorian ja varastosijainnin mukaan
+- ⚙️ **Hallinnoi kategorioita**: Lisää ja poista kategorioita järjestelmässä
+- 📊 **Tilastot**: Näytä keskeiset mittarit kuten tuotteiden kokonaismäärä, varastotasot ja varaston arvo
+- 📍 **Varastopaikat**: Seuraa tuotteita eri varastopaikoissa (3 sisäistä + 3 ulkoista varastoa)
+- 🎨 **Moderni käyttöliittymä**: Kaunis gradient-muotoilu responsiivisilla korteilla ja sujuvilla animaatioilla
 
-## Prerequisites
+## Varastopaikat
 
-- Python 3.7 or higher
-- pip (Python package manager)
+### Sisäiset varastot
+- Vantaa
+- Tampere
+- Hollola
 
-## Installation
+### Ulkoiset varastot
+- Ulkovarasto 1
+- Ulkovarasto 2
+- Ulkovarasto 3
 
-1. Clone the repository:
+## Oletuskategoriat
+
+- DEMOLAITTEET
+- VALMIIT
+- KOTELOT
+- IT TAVARAT
+- TARVIKKEET
+- LAITEOSAT
+
+Kategorioita voi lisätä ja poistaa käyttöliittymän kautta.
+
+## Edellytykset
+
+- Python 3.7 tai uudempi
+- pip (Python-paketinhallinta)
+
+## Asennus
+
+1. Kloonaa repositorio:
 ```bash
 git clone https://github.com/anstaman/Inventory.git
 cd Inventory
 ```
 
-2. Install dependencies:
+2. Asenna riippuvuudet:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Initialize the database with sample products:
+3. Alusta tietokanta esimerkkituotteilla:
 ```bash
 python init_db.py
 ```
 
-This will create a SQLite database with 20 pre-populated sample products.
+Tämä luo SQLite-tietokannan 20 esimerkkituotteella, jotka on jaettu eri kategorioihin ja varastoihin.
 
-## Running the Application
+## Sovelluksen käynnistäminen
 
-Start the Flask development server:
+Käynnistä Flask-kehityspalvelin:
 ```bash
 python app.py
 ```
 
-The application will be available at `http://localhost:5000`
+Sovellus on käytettävissä osoitteessa `http://localhost:5000`
 
-## Usage
+## Käyttö
 
-### Browsing Products
-- The main page displays all products in a grid layout
-- Each product card shows the name, description, price, quantity, and category
-- Products are color-coded by stock level (low, medium, high)
+### Tuotteiden selaus
+- Pääsivu näyttää kaikki tuotteet ruudukkonäkymässä
+- Jokainen tuotekortti näyttää nimen, kuvauksen, hinnan, määrän, kategorian ja varastopaikan
+- Tuotteet on värikoodattu varastotason mukaan (vähäinen, keskitaso, korkea)
 
-### Adding a Product
-1. Click the "Add Product" button
-2. Fill in the product details in the modal form
-3. Click "Save Product"
+### Tuotteen lisääminen
+1. Klikkaa "Lisää tuote" -painiketta
+2. Täytä tuotetiedot modaalilomakkeessa
+3. Klikkaa "Tallenna tuote"
 
-### Editing a Product
-1. Click the "Edit" button on any product card
-2. Modify the product details in the modal form
-3. Click "Save Product"
+### Tuotteen muokkaaminen
+1. Klikkaa "Muokkaa"-painiketta tuotekortissa
+2. Muokkaa tuotetietoja modaalilomakkeessa
+3. Klikkaa "Tallenna tuote"
 
-### Deleting a Product
-1. Click the "Delete" button on any product card
-2. Confirm the deletion
+### Tuotteen poistaminen
+1. Klikkaa "Poista"-painiketta tuotekortissa
+2. Vahvista poistaminen
 
-### Searching and Filtering
-- Use the search box to find products by name or description
-- Use the category dropdown to filter by category
-- Both filters can be used together
+### Haku ja suodatus
+- Käytä hakukenttää löytääksesi tuotteita nimellä tai kuvauksella
+- Käytä kategoria-pudotusvalikkoa suodattaaksesi kategorian mukaan
+- Käytä varasto-pudotusvalikkoa suodattaaksesi varastopaikan mukaan
+- Kaikkia suodattimia voi käyttää yhdessä
 
-## Database Schema
+### Kategorioiden hallinta
+1. Klikkaa "Hallinnoi kategorioita" -painiketta
+2. Lisää uusi kategoria kirjoittamalla nimi ja klikkaamalla "Lisää"
+3. Poista kategoria klikkaamalla "Poista"-painiketta kategorian kohdalla
 
-The application uses a simple SQLite database with a single `Product` table:
+## Tietokantarakenne
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Integer | Primary key |
-| name | String(100) | Product name |
-| description | String(500) | Product description |
-| quantity | Integer | Stock quantity |
-| price | Float | Product price |
-| category | String(50) | Product category |
-| created_at | DateTime | Creation timestamp |
+Sovellus käyttää yksinkertaista SQLite-tietokantaa kahdella taululla:
 
-## API Endpoints
+### Product-taulu
 
-- `GET /` - Main application page
-- `GET /api/products` - Get all products
-- `GET /api/products/<id>` - Get a specific product
-- `POST /api/products` - Create a new product
-- `PUT /api/products/<id>` - Update a product
-- `DELETE /api/products/<id>` - Delete a product
+| Kenttä | Tyyppi | Kuvaus |
+|--------|--------|---------|
+| id | Integer | Pääavain |
+| name | String(100) | Tuotteen nimi |
+| description | String(500) | Tuotteen kuvaus |
+| quantity | Integer | Varastomäärä |
+| price | Float | Tuotteen hinta |
+| category | String(100) | Tuotteen kategoria |
+| location | String(100) | Varastopaikka |
+| created_at | DateTime | Luontiaika |
 
-## Technologies Used
+### Category-taulu
 
-- **Backend**: Flask (Python web framework)
-- **Database**: SQLite with Flask-SQLAlchemy ORM
+| Kenttä | Tyyppi | Kuvaus |
+|--------|--------|---------|
+| id | Integer | Pääavain |
+| name | String(100) | Kategorian nimi (uniikki) |
+| created_at | DateTime | Luontiaika |
+
+## API-päätepisteet
+
+### Tuotteet
+- `GET /` - Pääsovelluksen sivu
+- `GET /api/products` - Hae kaikki tuotteet
+- `GET /api/products/<id>` - Hae tietty tuote
+- `POST /api/products` - Luo uusi tuote
+- `PUT /api/products/<id>` - Päivitä tuote
+- `DELETE /api/products/<id>` - Poista tuote
+
+### Kategoriat
+- `GET /api/categories` - Hae kaikki kategoriat
+- `POST /api/categories` - Luo uusi kategoria
+- `DELETE /api/categories/<id>` - Poista kategoria
+
+## Käytetyt teknologiat
+
+- **Backend**: Flask (Python web-kehys)
+- **Tietokanta**: SQLite Flask-SQLAlchemy ORM:llä
 - **Frontend**: HTML5, CSS3 (vanilla), JavaScript (vanilla)
-- **Design**: Modern gradient UI with responsive grid layout
+- **Suunnittelu**: Moderni gradient-käyttöliittymä responsiivisella ruudukkoasettelulla
 
-## Project Structure
+## Projektirakenne
 
 ```
 Inventory/
-├── app.py              # Main Flask application
-├── init_db.py          # Database initialization script
-├── requirements.txt    # Python dependencies
+├── app.py              # Pää-Flask-sovellus
+├── init_db.py          # Tietokannan alustusohjelma
+├── requirements.txt    # Python-riippuvuudet
 ├── templates/
-│   └── index.html      # Frontend application
-└── inventory.db        # SQLite database (created after init_db.py)
+│   └── index.html      # Frontend-sovellus
+└── inventory.db        # SQLite-tietokanta (luodaan init_db.py:n jälkeen)
 ```
 
-## License
+## Lisenssi
 
-This project is open source and available under the MIT License.
+Tämä projekti on avointa lähdekoodia ja saatavilla MIT-lisenssillä.
